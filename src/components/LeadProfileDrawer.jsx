@@ -548,8 +548,17 @@ export default function LeadProfileDrawer({
 
       {/* Stage Transition Modal (Enrolled / Lost) */}
       {showStatusModal && (
-        <div className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl border border-slate-200 space-y-4">
+        <div
+          onClick={(e) => {
+            e.stopPropagation();
+            setShowStatusModal(false);
+          }}
+          className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl border border-slate-200 space-y-4"
+          >
             <h3 className="font-bold text-sm text-slate-900">
               {targetStage === "Enrolled" ? "🎉 Mark Student as Enrolled" : "Mark Lead as Lost / Dropped"}
             </h3>
