@@ -11,6 +11,7 @@ import CustomDropdown from "../components/CustomDropdown.jsx";
 import {
   fetchLeadsApi,
   fetchAnalyticsApi,
+  fetchCoursesApi,
   syncLeadsApi,
   updateLeadStatusApi
 } from "../utils/api.js";
@@ -49,6 +50,7 @@ export default function CrmDashboard() {
   const selectedLeadRef = useRef(null);
   const [whatsAppLead, setWhatsAppLead] = useState(null);
   const [addModalOpen, setAddModalOpen] = useState(false);
+  const [catalogCourses, setCatalogCourses] = useState([]);
 
   // Sync ref and state safely
   const handleSelectLead = (lead) => {
@@ -64,8 +66,10 @@ export default function CrmDashboard() {
   // Track total for real-time sound/alert
   const previousTotalRef = useRef(0);
 
-  // Extract distinct course list for filters
-  const availableCourses = analytics?.courses?.map((c) => c.course) || [];
+  // Extract distinct course list for filters & modals
+  const availableCourses = catalogCourses.length > 0
+    ? Array.from(new Set(catalogCourses.map((c) => c.title || c.name).filter(Boolean)))
+    : (analytics?.courses?.map((c) => c.course) || []);
 
   // Show Toast helper
   const showToast = (message, type = "success") => {
@@ -92,10 +96,15 @@ export default function CrmDashboard() {
           params.followUp = "today";
         }
 
-        const [leadsRes, analyticsRes] = await Promise.all([
+        const [leadsRes, analyticsRes, coursesRes] = await Promise.all([
           fetchLeadsApi(params),
-          fetchAnalyticsApi().catch(() => null)
+          fetchAnalyticsApi().catch(() => null),
+          fetchCoursesApi().catch(() => null)
         ]);
+
+        if (Array.isArray(coursesRes)) {
+          setCatalogCourses(coursesRes);
+        }
 
         if (leadsRes?.success) {
           const newLeads = leadsRes.leads || [];

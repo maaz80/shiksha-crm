@@ -121,3 +121,7 @@ export const updatePermissionsApi = (permissions) =>
     method: "PUT",
     body: JSON.stringify({ permissions })
   });
+
+export const fetchCoursesApi = () =>
+  request("/courses", { method: "GET" });
+
